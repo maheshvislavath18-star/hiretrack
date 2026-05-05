@@ -1,0 +1,64 @@
+<div class="container mt-4">
+
+    <h2 class="mb-4">Dashboard</h2>
+
+    <!-- 🔹 Stats Cards -->
+    <div class="row text-center mb-4">
+
+        <div class="col-md-3">
+            <div class="card bg-dark text-white p-3">
+                <h5>Total</h5>
+                <h3>{{ total }}</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card bg-primary text-white p-3">
+                <h5>Applied</h5>
+                <h3>{{ applied }}</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark p-3">
+                <h5>Interview</h5>
+                <h3>{{ interview }}</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card bg-danger text-white p-3">
+                <h5>Rejected</h5>
+                <h3>{{ rejected }}</h3>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 🔹 Applications List -->
+    {% for app in applications %}
+
+    <div class="card mb-3 p-3 shadow-sm">
+        <h4>{{ app.job.title }}</h4>
+        <p><strong>Company:</strong> {{ app.job.company }}</p>
+
+        <!-- 🔥 Status Badge -->
+        {% if app.status == "Applied" %}
+            <span class="badge bg-primary">Applied</span>
+        {% elif app.status == "Interview" %}
+            <span class="badge bg-warning text-dark">Interview</span>
+        {% elif app.status == "Rejected" %}
+            <span class="badge bg-danger">Rejected</span>
+        {% else %}
+            <span class="badge bg-secondary">{{ app.status }}</span>
+        {% endif %}
+
+        <p class="mt-2">Applied Date: {{ app.applied_date }}</p>
+
+        <a href="{% url 'update_application' app.id %}" class="btn btn-sm btn-info">Edit</a>
+        <a href="{% url 'delete_application' app.id %}" class="btn btn-sm btn-danger">Delete</a>
+    </div>
+
+    {% endfor %}
+
+</div>

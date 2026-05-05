@@ -1,0 +1,30 @@
+<h2>Job List</h2>
+
+<!-- ✅ ADD JOB BUTTON -->
+<a href="{% url 'add_job' %}">
+    <button>➕ Add New Job</button>
+</a>
+
+<br><br>
+
+{% for job in jobs %}
+
+    <h3>{{ job.title }}</h3>
+    <p>Company: {{ job.company }}</p>
+    <p>Location: {{ job.location }}</p>
+    <p>Salary: {{ job.salary }}</p>
+
+    {% if job.id in applied_jobs %}
+        <button disabled>Already Applied</button>
+    {% else %}
+        <form action="{% url 'apply_job' job.id %}" method="POST">
+            {% csrf_token %}
+            <button type="submit">Apply</button>
+        </form>
+    {% endif %}
+
+    <hr>
+
+{% empty %}
+    <p>No jobs available</p>
+{% endfor %}

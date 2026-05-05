@@ -1,0 +1,22 @@
+{% for app in applications %}
+
+{% if app.job %}
+
+<h3>{{ app.job.title }}</h3>
+<p>Company: {{ app.job.company }}</p>
+
+{% else %}
+
+<p style="color:red;">⚠️ Job data missing</p>
+
+{% endif %}
+
+<p>Status: {{ app.status }}</p>
+<p>Applied Date: {{ app.applied_date }}</p>
+
+<a href="{% url 'update_application' app.id %}">Edit</a> |
+<a href="{% url 'delete_application' app.id %}">Delete</a>
+
+<hr>
+
+{% endfor %}
