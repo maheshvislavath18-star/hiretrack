@@ -39,3 +39,13 @@ python manage.py runserver
 
 ### ✏️ Update Job
 ![Update Job](screenshots/updatejob.png)
+
+## 📸 Screenshots
+
+![Dashboard](screenshots/dshboard.png)
+
+![Main](screenshots/main.png)
+
+![Add Job](screenshots/Addjob.png)
+
+![Update Job](screenshots/updatejob.png)
