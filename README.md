@@ -34,18 +34,16 @@ python manage.py runserver
 ### 🏡 Main Page
 ![Main](screenshots/main.png)
 
+## 📸 Screenshots
+
+### 🏠 Dashboard
+![Dashboard](screenshots/dashboard.png)
+
+### 🏡 Main Page
+![Main](screenshots/main.png)
+
 ### ➕ Add Job
 ![Add Job](screenshots/addjob.png)
 
 ### ✏️ Update Job
-![Update Job](screenshots/updatejob.png)
-
-## 📸 Screenshots
-
-![Dashboard](screenshots/dshboard.png)
-
-![Main](screenshots/main.png)
-
-![Add Job](screenshots/Addjob.png)
-
 ![Update Job](screenshots/updatejob.png)
