@@ -1,12 +1,26 @@
-# HireTrack
+# 🚀 HireTrack - Django Job Tracking System
 
-## Features
-- User authentication
-- Job tracking system
-- Status updates
+## 📌 Overview
+HireTrack is a web-based job tracking system built using Django. It helps users manage job applications efficiently.
 
-## Tech Stack
-- Python
-- Django
-- HTML, CSS
-- SQLite
+---
+
+## ✨ Features
+- User authentication system
+- Add and track job applications
+- Status tracking (Applied / Pending / Selected / Rejected)
+- Clean dashboard UI
+
+---
+
+## 🛠️ Tech Stack
+- Python 🐍
+- Django 🌐
+- HTML, CSS 🎨
+- SQLite 🗄️
+
+---
+
+## 🚀 How to Run Project
+```bash
+python manage.py runserver
