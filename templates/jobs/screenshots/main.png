@@ -1,0 +1,77 @@
+<h2>Job List</h2>
+
+<!-- ✅ ADD JOB BUTTON -->
+<a href="/add-job/">
+    <button>➕ Add New Job</button>
+</a>
+
+<br><br>
+
+
+
+    <h3>Python Developer</h3>
+    <p>Company: TCS</p>
+    <p>Location: Hyderabad</p>
+    <p>Salary: 5 LPA</p>
+
+    
+        <button disabled>Already Applied</button>
+    
+
+    <hr>
+
+
+
+    <h3>Python Developer</h3>
+    <p>Company: TCS</p>
+    <p>Location: Hyderabad</p>
+    <p>Salary: 5 LPA</p>
+
+    
+        <button disabled>Already Applied</button>
+    
+
+    <hr>
+
+
+
+    <h3>.NET Developer</h3>
+    <p>Company: RR</p>
+    <p>Location: Chennai</p>
+    <p>Salary: 30000</p>
+
+    
+        <button disabled>Already Applied</button>
+    
+
+    <hr>
+
+
+
+    <h3>Python Developer</h3>
+    <p>Company: TCS</p>
+    <p>Location: Hyderabad</p>
+    <p>Salary: 5 LPA</p>
+
+    
+        <form action="/apply/4/" method="POST">
+            <input type="hidden" name="csrfmiddlewaretoken" value="v9peHWyO6eR9g8NlGUZdxwesU2qo69EWApxwwLV9nY7HdJ0RoOLxBvP9tWNAPEOW">
+            <button type="submit">Apply</button>
+        </form>
+    
+
+    <hr>
+
+
+
+    <h3>Java Developer</h3>
+    <p>Company: Oracle</p>
+    <p>Location: Bengaluru</p>
+    <p>Salary: 50000</p>
+
+    
+        <button disabled>Already Applied</button>
+    
+
+    <hr>
+
