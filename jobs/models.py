@@ -31,3 +31,9 @@ class JobApplication(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.job.title}"
+    
+    resume = models.FileField(
+    upload_to='resumes/',
+    null=True,
+    blank=True
+)

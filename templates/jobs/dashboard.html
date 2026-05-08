@@ -35,30 +35,161 @@
 
     </div>
 
+    <!-- 🔍 Search + Filter -->
+    <form method="GET" class="row g-2 mb-4">
+
+        <div class="col-md-5">
+            <input type="text"
+                   name="q"
+                   class="form-control"
+                   placeholder="Search company or position">
+        </div>
+
+        <div class="col-md-4">
+            <select name="status" class="form-select">
+
+                <option value="">All Status</option>
+
+                <option value="Applied">
+                    Applied
+                </option>
+
+                <option value="Interview">
+                    Interview
+                </option>
+
+                <option value="Rejected">
+                    Rejected
+                </option>
+
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <button type="submit"
+                    class="btn btn-success w-100">
+
+                Search / Filter
+
+            </button>
+        </div>
+
+    </form>
+
     <!-- 🔹 Applications List -->
     {% for app in applications %}
 
     <div class="card mb-3 p-3 shadow-sm">
+
         <h4>{{ app.job.title }}</h4>
-        <p><strong>Company:</strong> {{ app.job.company }}</p>
+
+        <p>
+            <strong>Company:</strong>
+            {{ app.job.company }}
+        </p>
 
         <!-- 🔥 Status Badge -->
         {% if app.status == "Applied" %}
-            <span class="badge bg-primary">Applied</span>
-        {% elif app.status == "Interview" %}
-            <span class="badge bg-warning text-dark">Interview</span>
-        {% elif app.status == "Rejected" %}
-            <span class="badge bg-danger">Rejected</span>
-        {% else %}
-            <span class="badge bg-secondary">{{ app.status }}</span>
-        {% endif %}
-c:\Users\MAHESH\OneDrive\Desktop\Screenshots\Desktop\Screenshots
-        <p class="mt-2">Applied Date: {{ app.applied_date }}</p>
 
-        <a href="{% url 'update_application' app.id %}" class="btn btn-sm btn-info">Edit</a>
-        <a href="{% url 'delete_application' app.id %}" class="btn btn-sm btn-danger">Delete</a>
+            <span class="badge bg-primary">
+                Applied
+            </span>
+
+        {% elif app.status == "Interview" %}
+
+            <span class="badge bg-warning text-dark">
+                Interview
+            </span>
+
+        {% elif app.status == "Rejected" %}
+
+            <span class="badge bg-danger">
+                Rejected
+            </span>
+
+        {% else %}
+
+            <span class="badge bg-secondary">
+                {{ app.status }}
+            </span>
+
+        {% endif %}
+
+        <p class="mt-2">
+            Applied Date:
+            {{ app.applied_date }}
+        </p>
+
+        <div class="mt-2">
+
+            <a href="{% url 'update_application' app.id %}"
+               class="btn btn-sm btn-info">
+
+               Edit
+
+            </a>
+
+            <a href="{% url 'delete_application' app.id %}"
+               class="btn btn-sm btn-danger">
+
+               Delete
+
+            </a>
+
+        </div>
+
+    </div>
+
+    {% empty %}
+
+    <div class="alert alert-warning">
+
+        No applications found.
+
     </div>
 
     {% endfor %}
+
+    <!-- 🔥 Pagination -->
+    <div class="mt-4 text-center">
+
+        {% if applications.has_previous %}
+
+            <a href="?page=1"
+               class="btn btn-outline-dark btn-sm">
+
+               First
+
+            </a>
+
+            <a href="?page={{ applications.previous_page_number }}"
+               class="btn btn-outline-primary btn-sm">
+
+               Previous
+
+            </a>
+
+        {% endif %}
+
+        <span class="mx-2">
+
+            Page {{ applications.number }}
+            of
+            {{ applications.paginator.num_pages }}
+
+        </span>
+
+        {% if applications.has_next %}
+
+            <a href="?page={{ applications.next_page_number }}"
+               class="btn btn-outline-primary btn-sm">
+
+               Next
+
+            </a>
+
+        {% endif %}
+
+    </div>
 
 </div>

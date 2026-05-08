@@ -1,14 +1,21 @@
 from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
+from django.core.paginator import Paginator
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
 from .models import Job, JobApplication
+from .serializers import JobSerializer
 
 
 # 🔥 JOB LIST
 @login_required
 def job_list(request):
+
     jobs = Job.objects.all()
 
-    # ✅ get applied job ids for current user
     applied_jobs = JobApplication.objects.filter(
         user=request.user
     ).values_list('job_id', flat=True)
@@ -18,19 +25,29 @@ def job_list(request):
         'applied_jobs': applied_jobs
     })
 
+
 # 🔥 APPLY FOR JOB
 @login_required
 def apply_job(request, job_id):
+
     job = get_object_or_404(Job, id=job_id)
 
-    # prevent duplicate
-    if JobApplication.objects.filter(user=request.user, job=job).exists():
+    # ✅ Prevent duplicate application
+    if JobApplication.objects.filter(
+        user=request.user,
+        job=job
+    ).exists():
+
         return HttpResponse("Already Applied ❌")
+
+    # ✅ Resume Upload
+    resume = request.FILES.get('resume')
 
     JobApplication.objects.create(
         user=request.user,
         job=job,
-        status="Applied"
+        status="Applied",
+        resume=resume
     )
 
     return redirect('my_applications')
@@ -39,24 +56,39 @@ def apply_job(request, job_id):
 # 🔥 MY APPLICATIONS
 @login_required
 def my_applications(request):
+
     applications = JobApplication.objects.filter(
         user=request.user
     ).order_by('-applied_date')
 
     return render(request, 'jobs/my_applications.html', {
-        'applications': applications   # ✅ IMPORTANT NAME
+        'applications': applications
     })
 
 
 # 🔥 UPDATE APPLICATION
 @login_required
 def update_application(request, id):
-    application = get_object_or_404(JobApplication, id=id, user=request.user)
+
+    application = get_object_or_404(
+        JobApplication,
+        id=id,
+        user=request.user
+    )
 
     if request.method == "POST":
+
         application.status = request.POST.get('status')
+
         application.notes = request.POST.get('notes')
+
+        # ✅ Resume Update
+        if request.FILES.get('resume'):
+
+            application.resume = request.FILES.get('resume')
+
         application.save()
+
         return redirect('my_applications')
 
     return render(request, 'jobs/update_application.html', {
@@ -67,10 +99,17 @@ def update_application(request, id):
 # 🔥 DELETE APPLICATION
 @login_required
 def delete_application(request, id):
-    application = get_object_or_404(JobApplication, id=id, user=request.user)
+
+    application = get_object_or_404(
+        JobApplication,
+        id=id,
+        user=request.user
+    )
 
     if request.method == "POST":
+
         application.delete()
+
         return redirect('my_applications')
 
     return render(request, 'jobs/delete_confirm.html', {
@@ -80,6 +119,7 @@ def delete_application(request, id):
 
 # 🔥 TEST DATA
 def insert_job(request):
+
     Job.objects.create(
         title="Python Developer",
         company="TCS",
@@ -87,19 +127,63 @@ def insert_job(request):
         salary="5 LPA",
         description="Django Developer role"
     )
+
     return HttpResponse("Job Inserted Successfully ✅")
+
 
 # 🔥 DASHBOARD
 @login_required
 def dashboard(request):
+
+    query = request.GET.get('q')
+
+    status = request.GET.get('status')
+
     applications = JobApplication.objects.filter(
         user=request.user
     ).order_by('-applied_date')
 
-    total = applications.count()
-    applied = applications.filter(status="Applied").count()
-    interview = applications.filter(status="Interview").count()
-    rejected = applications.filter(status="Rejected").count()
+    # 🔍 Search
+    if query:
+
+        applications = applications.filter(
+            Q(job__company__icontains=query) |
+            Q(job__title__icontains=query)
+        )
+
+    # 🔥 Filter
+    if status:
+
+        applications = applications.filter(
+            status=status
+        )
+
+    # 📄 Pagination
+    paginator = Paginator(applications, 5)
+
+    page_number = request.GET.get('page')
+
+    applications = paginator.get_page(page_number)
+
+    # 📊 Dashboard Counts
+    total = JobApplication.objects.filter(
+        user=request.user
+    ).count()
+
+    applied = JobApplication.objects.filter(
+        user=request.user,
+        status="Applied"
+    ).count()
+
+    interview = JobApplication.objects.filter(
+        user=request.user,
+        status="Interviewing"
+    ).count()
+
+    rejected = JobApplication.objects.filter(
+        user=request.user,
+        status="Rejected"
+    ).count()
 
     return render(request, 'jobs/dashboard.html', {
         'applications': applications,
@@ -109,9 +193,13 @@ def dashboard(request):
         'rejected': rejected,
     })
 
+
+# 🔥 ADD JOB
 @login_required
 def add_job(request):
+
     if request.method == "POST":
+
         Job.objects.create(
             title=request.POST.get('title'),
             company=request.POST.get('company'),
@@ -119,6 +207,21 @@ def add_job(request):
             salary=request.POST.get('salary'),
             description=request.POST.get('description')
         )
-        return redirect('job_list')   # go back to job list
+
+        return redirect('job_list')
 
     return render(request, 'jobs/add_job.html')
+
+
+# 🔥 REST API
+@api_view(['GET'])
+def api_jobs(request):
+
+    jobs = JobApplication.objects.all()
+
+    serializer = JobSerializer(
+        jobs,
+        many=True
+    )
+
+    return Response(serializer.data)
