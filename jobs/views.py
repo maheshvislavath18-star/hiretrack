@@ -10,6 +10,11 @@ from .models import Job, JobApplication
 from .serializers import JobSerializer
 
 
+# 🔥 HOME PAGE
+def home(request):
+    return redirect('/accounts/login/')
+
+
 # 🔥 JOB LIST
 @login_required
 def job_list(request):
@@ -109,6 +114,7 @@ def insert_job(request):
         salary="5 LPA",
         description="Django Developer role"
     )
+
     return HttpResponse("Job Inserted Successfully ✅")
 
 
@@ -132,13 +138,29 @@ def dashboard(request):
         applications = applications.filter(status=status)
 
     paginator = Paginator(applications, 5)
+
     page_number = request.GET.get('page')
+
     applications = paginator.get_page(page_number)
 
-    total = JobApplication.objects.filter(user=request.user).count()
-    applied = JobApplication.objects.filter(user=request.user, status="Applied").count()
-    interview = JobApplication.objects.filter(user=request.user, status="Interviewing").count()
-    rejected = JobApplication.objects.filter(user=request.user, status="Rejected").count()
+    total = JobApplication.objects.filter(
+        user=request.user
+    ).count()
+
+    applied = JobApplication.objects.filter(
+        user=request.user,
+        status="Applied"
+    ).count()
+
+    interview = JobApplication.objects.filter(
+        user=request.user,
+        status="Interviewing"
+    ).count()
+
+    rejected = JobApplication.objects.filter(
+        user=request.user,
+        status="Rejected"
+    ).count()
 
     return render(request, 'jobs/dashboard.html', {
         'applications': applications,
@@ -152,7 +174,9 @@ def dashboard(request):
 # 🔥 ADD JOB
 @login_required
 def add_job(request):
+
     if request.method == "POST":
+
         Job.objects.create(
             title=request.POST.get('title'),
             company=request.POST.get('company'),
@@ -160,6 +184,7 @@ def add_job(request):
             salary=request.POST.get('salary'),
             description=request.POST.get('description')
         )
+
         return redirect('job_list')
 
     return render(request, 'jobs/add_job.html')
@@ -168,6 +193,12 @@ def add_job(request):
 # 🔥 API
 @api_view(['GET'])
 def api_jobs(request):
-    jobs = Job.objects.all()   # ✅ FIXED (you had JobApplication before)
-    serializer = JobSerializer(jobs, many=True)
+
+    jobs = Job.objects.all()
+
+    serializer = JobSerializer(
+        jobs,
+        many=True
+    )
+
     return Response(serializer.data)
