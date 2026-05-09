@@ -2,8 +2,12 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # 🔥 JOB LIST (main page)
-    path('', views.job_list, name='job_list'),
+
+    # 🔥 HOME PAGE
+    path('', views.home, name='home'),
+
+    # 🔥 JOB LIST
+    path('jobs/', views.job_list, name='job_list'),
 
     # 🔥 DASHBOARD
     path('dashboard/', views.dashboard, name='dashboard'),
