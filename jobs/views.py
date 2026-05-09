@@ -13,7 +13,6 @@ from .serializers import JobSerializer
 # 🔥 JOB LIST
 @login_required
 def job_list(request):
-
     jobs = Job.objects.all()
 
     applied_jobs = JobApplication.objects.filter(
@@ -26,21 +25,15 @@ def job_list(request):
     })
 
 
-# 🔥 APPLY FOR JOB
+# 🔥 APPLY JOB
 @login_required
 def apply_job(request, job_id):
-
     job = get_object_or_404(Job, id=job_id)
 
-    # ✅ Prevent duplicate application
-    if JobApplication.objects.filter(
-        user=request.user,
-        job=job
-    ).exists():
-
+    # prevent duplicate
+    if JobApplication.objects.filter(user=request.user, job=job).exists():
         return HttpResponse("Already Applied ❌")
 
-    # ✅ Resume Upload
     resume = request.FILES.get('resume')
 
     JobApplication.objects.create(
@@ -56,7 +49,6 @@ def apply_job(request, job_id):
 # 🔥 MY APPLICATIONS
 @login_required
 def my_applications(request):
-
     applications = JobApplication.objects.filter(
         user=request.user
     ).order_by('-applied_date')
@@ -69,7 +61,6 @@ def my_applications(request):
 # 🔥 UPDATE APPLICATION
 @login_required
 def update_application(request, id):
-
     application = get_object_or_404(
         JobApplication,
         id=id,
@@ -77,18 +68,13 @@ def update_application(request, id):
     )
 
     if request.method == "POST":
-
         application.status = request.POST.get('status')
-
         application.notes = request.POST.get('notes')
 
-        # ✅ Resume Update
         if request.FILES.get('resume'):
-
             application.resume = request.FILES.get('resume')
 
         application.save()
-
         return redirect('my_applications')
 
     return render(request, 'jobs/update_application.html', {
@@ -99,7 +85,6 @@ def update_application(request, id):
 # 🔥 DELETE APPLICATION
 @login_required
 def delete_application(request, id):
-
     application = get_object_or_404(
         JobApplication,
         id=id,
@@ -107,9 +92,7 @@ def delete_application(request, id):
     )
 
     if request.method == "POST":
-
         application.delete()
-
         return redirect('my_applications')
 
     return render(request, 'jobs/delete_confirm.html', {
@@ -117,9 +100,8 @@ def delete_application(request, id):
     })
 
 
-# 🔥 TEST DATA
+# 🔥 INSERT TEST JOB
 def insert_job(request):
-
     Job.objects.create(
         title="Python Developer",
         company="TCS",
@@ -127,63 +109,36 @@ def insert_job(request):
         salary="5 LPA",
         description="Django Developer role"
     )
-
     return HttpResponse("Job Inserted Successfully ✅")
 
 
 # 🔥 DASHBOARD
 @login_required
 def dashboard(request):
-
     query = request.GET.get('q')
-
     status = request.GET.get('status')
 
     applications = JobApplication.objects.filter(
         user=request.user
     ).order_by('-applied_date')
 
-    # 🔍 Search
     if query:
-
         applications = applications.filter(
             Q(job__company__icontains=query) |
             Q(job__title__icontains=query)
         )
 
-    # 🔥 Filter
     if status:
+        applications = applications.filter(status=status)
 
-        applications = applications.filter(
-            status=status
-        )
-
-    # 📄 Pagination
     paginator = Paginator(applications, 5)
-
     page_number = request.GET.get('page')
-
     applications = paginator.get_page(page_number)
 
-    # 📊 Dashboard Counts
-    total = JobApplication.objects.filter(
-        user=request.user
-    ).count()
-
-    applied = JobApplication.objects.filter(
-        user=request.user,
-        status="Applied"
-    ).count()
-
-    interview = JobApplication.objects.filter(
-        user=request.user,
-        status="Interviewing"
-    ).count()
-
-    rejected = JobApplication.objects.filter(
-        user=request.user,
-        status="Rejected"
-    ).count()
+    total = JobApplication.objects.filter(user=request.user).count()
+    applied = JobApplication.objects.filter(user=request.user, status="Applied").count()
+    interview = JobApplication.objects.filter(user=request.user, status="Interviewing").count()
+    rejected = JobApplication.objects.filter(user=request.user, status="Rejected").count()
 
     return render(request, 'jobs/dashboard.html', {
         'applications': applications,
@@ -197,9 +152,7 @@ def dashboard(request):
 # 🔥 ADD JOB
 @login_required
 def add_job(request):
-
     if request.method == "POST":
-
         Job.objects.create(
             title=request.POST.get('title'),
             company=request.POST.get('company'),
@@ -207,21 +160,14 @@ def add_job(request):
             salary=request.POST.get('salary'),
             description=request.POST.get('description')
         )
-
         return redirect('job_list')
 
     return render(request, 'jobs/add_job.html')
 
 
-# 🔥 REST API
+# 🔥 API
 @api_view(['GET'])
 def api_jobs(request):
-
-    jobs = JobApplication.objects.all()
-
-    serializer = JobSerializer(
-        jobs,
-        many=True
-    )
-
+    jobs = Job.objects.all()   # ✅ FIXED (you had JobApplication before)
+    serializer = JobSerializer(jobs, many=True)
     return Response(serializer.data)
