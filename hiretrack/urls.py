@@ -1,19 +1,22 @@
 from django.contrib import admin
 from django.urls import path, include
-from django.http import HttpResponse
 from django.conf import settings
 from django.conf.urls.static import static
+from django.shortcuts import redirect
 
-# 🔥 temporary homepage (for Render test)
+
+# 🔥 redirect root to login
 def home(request):
-    return HttpResponse("HireTrack is LIVE 🚀")
+    return redirect('/accounts/login/')
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
     path('accounts/', include('accounts.urls')),
+
     path('jobs/', include('jobs.urls')),
 
-    # 🔥 IMPORTANT: root page must not break
     path('', home),
 ]
 
